@@ -8,6 +8,10 @@ use Monolog\Handler\StreamHandler;
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
+\Sentry\init([
+    'dsn' => $_ENV['SENTRY_DSN'],
+]);
+
 $log = new Logger('bot');
 $log->pushHandler(new StreamHandler(__DIR__ . '/bot.log', Logger::DEBUG));
 
@@ -15,6 +19,7 @@ try {
     $bot = new Api($_ENV['TG_API_TOKEN']);
 } catch (\Telegram\Bot\Exceptions\TelegramSDKException $e) {
     $log->error('Bot initialization failed: ' . $e->getMessage());
+    \Sentry\captureException($e);
     die();
 }
 
@@ -149,5 +154,6 @@ while (true) {
         sleep(1);
     } catch (\Exception $e) {
         $log->error('Error fetching updates: ' . $e->getMessage());
+        \Sentry\captureException($e);
     }
 }
