@@ -29,10 +29,12 @@ function formatAnswers(array $questionAnswers): string
     return $result;
 }
 
+require_once __DIR__ . '/introduction.php';
 require_once __DIR__ . '/questions.php';
 require_once __DIR__ . '/answers.php';
 require_once __DIR__ . '/detailed_answers.php';
 /**
+ * @var string $introduction
  * @var array $questions
  * @var array $answers
  * @var array $detailedAnswers
@@ -75,15 +77,21 @@ while (true) {
                         ]);
                         $bot->sendMessage([
                             'chat_id' => $chatId,
-                            'text' => "Привет! Пройди тест и узнай, какой стиль планирования тебе подходит"
+                            'text' => $introduction,
+                            'parse_mode' => 'HTML',
                         ]);
                         $bot->sendMessage([
                             'chat_id' => $chatId,
                             'text' => $questions[0] . PHP_EOL . formatAnswers($detailedAnswers[0]),
-                            'reply_markup' => $keyboard
+                            'reply_markup' => $keyboard,
+                            'parse_mode' => 'HTML',
                         ]);
                     } else {
-                        $bot->sendMessage(['chat_id' => $chatId, 'text' => "Выберите ответ из предложенных"]);
+                        $bot->sendMessage([
+                            'chat_id' => $chatId,
+                            'text' => "Выберите ответ из предложенных",
+                            'parse_mode' => 'HTML',
+                        ]);
                     }
                 } else {
                     if ($userSession['step'] > 0) {
@@ -100,7 +108,8 @@ while (true) {
                                 $bot->sendMessage([
                                     'chat_id' => $chatId,
                                     'text' => $questions[$userSession['step'] - 1] . PHP_EOL . formatAnswers($detailedAnswers[$userSession['step'] - 1]),
-                                    'reply_markup' => $keyboard
+                                    'reply_markup' => $keyboard,
+                                    'parse_mode' => 'HTML',
                                 ]);
                             } else {
                                 arsort($userSession['scores']);
@@ -110,19 +119,25 @@ while (true) {
                                  * @var $result_text
                                  */
 
-                                $bot->sendMessage(['chat_id' => $chatId, 'text' => $result_text]);
+                                $bot->sendMessage([
+                                    'chat_id' => $chatId,
+                                    'text' => $result_text,
+                                    'parse_mode' => 'HTML',
+                                ]);
                                 unset($_SESSION['users'][$chatId]);
                             }
                         } else {
                             $bot->sendMessage([
                                 'chat_id' => $chatId,
-                                'text' => "Пожалуйста, выберите A, B, C или D."
+                                'text' => "Пожалуйста, выберите A, B, C или D.",
+                                'parse_mode' => 'HTML',
                             ]);
                         }
                     } else {
                         $bot->sendMessage([
                             'chat_id' => $chatId,
-                            'text' => "Send /start to begin the quiz."
+                            'text' => "Send /start to begin the quiz.",
+                            'parse_mode' => 'HTML',
                         ]);
                     }
                 }
